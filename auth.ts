@@ -3,6 +3,7 @@ import Credentials from "next-auth/providers/credentials"
 import bcrypt from "bcrypt"
 import prisma from "@/lib/prisma"
 import { loginSchema } from "@/lib/validators/auth"
+import type { Role } from "@/app/generated/prisma/client"
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   session: { strategy: "jwt" },
@@ -40,14 +41,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   callbacks: {
     jwt({ token, user }) {
       if (user) {
-        token.role = (user as { role: string }).role
+        token.role = (user as { role: Role }).role
         token.companyId = (user as { companyId: string | null }).companyId
       }
       return token
     },
     session({ session, token }) {
       session.user.id = token.sub!
-      session.user.role = token.role as "SUPER_ADMIN" | "COMPANY_ADMIN"
+      session.user.role = token.role as Role
       session.user.companyId = (token.companyId as string | null) ?? null
       return session
     },
