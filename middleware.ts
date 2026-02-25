@@ -2,9 +2,10 @@ import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
 import { getToken } from "next-auth/jwt"
 
-// Must match the cookie name in auth.ts
-const useSecureCookies = process.env.VERCEL === "1"
-const cookieName = useSecureCookies
+// Auth.js v5 uses "authjs.session-token" by default
+// On HTTPS (Vercel), it becomes "__Secure-authjs.session-token"
+const secureCookie = process.env.VERCEL === "1"
+const cookieName = secureCookie
   ? "__Secure-authjs.session-token"
   : "authjs.session-token"
 
@@ -15,6 +16,7 @@ export async function middleware(req: NextRequest) {
     req,
     secret: process.env.AUTH_SECRET!,
     cookieName,
+    secureCookie,
   })
   const isLoggedIn = !!token
 
