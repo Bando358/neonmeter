@@ -1,18 +1,25 @@
 import Stripe from "stripe"
 
-if (!process.env.STRIPE_SECRET_KEY) {
-  throw new Error("STRIPE_SECRET_KEY is not set")
-}
+let _stripe: Stripe | null = null
 
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  typescript: true,
-})
+export function getStripe(): Stripe {
+  if (!_stripe) {
+    if (!process.env.STRIPE_SECRET_KEY) {
+      throw new Error("STRIPE_SECRET_KEY is not set")
+    }
+    _stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
+      typescript: true,
+    })
+  }
+  return _stripe
+}
 
 export async function createOrGetStripeCustomer(
   companyId: string,
   companyName: string,
   email?: string | null
 ): Promise<string> {
+  const stripe = getStripe()
   const prisma = (await import("@/lib/prisma")).default
   const company = await prisma.company.findUnique({
     where: { id: companyId },

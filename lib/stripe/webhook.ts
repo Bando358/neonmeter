@@ -1,5 +1,5 @@
 import Stripe from "stripe"
-import { stripe } from "./client"
+import { getStripe } from "./client"
 
 export function verifyStripeWebhook(
   body: string,
@@ -8,5 +8,5 @@ export function verifyStripeWebhook(
   const secret = process.env.STRIPE_WEBHOOK_SECRET
   if (!secret) throw new Error("STRIPE_WEBHOOK_SECRET is not set")
 
-  return stripe.webhooks.constructEvent(body, signature, secret)
+  return getStripe().webhooks.constructEvent(body, signature, secret)
 }

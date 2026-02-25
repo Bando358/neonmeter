@@ -1,10 +1,16 @@
 import { FedaPay, Transaction } from "fedapay"
 
-// Initialize FedaPay
-FedaPay.setApiKey(process.env.FEDAPAY_SECRET_KEY || "")
-FedaPay.setEnvironment(
-  (process.env.FEDAPAY_ENVIRONMENT as "sandbox" | "live") || "sandbox"
-)
+let _initialized = false
+
+function initFedaPay() {
+  if (!_initialized) {
+    FedaPay.setApiKey(process.env.FEDAPAY_SECRET_KEY || "")
+    FedaPay.setEnvironment(
+      (process.env.FEDAPAY_ENVIRONMENT as "sandbox" | "live") || "sandbox"
+    )
+    _initialized = true
+  }
+}
 
 export interface CreateFedaPayTransactionParams {
   amount: number // In currency units (e.g., 2000 for 2000 XOF)
@@ -20,6 +26,8 @@ export interface CreateFedaPayTransactionParams {
 export async function createFedaPayTransaction(
   params: CreateFedaPayTransactionParams
 ) {
+  initFedaPay()
+
   const [firstname, ...lastParts] = params.customerName.split(" ")
   const lastname = lastParts.join(" ") || "-"
 

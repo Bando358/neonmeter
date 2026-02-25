@@ -2,7 +2,7 @@
 
 import prisma from "@/lib/prisma"
 import { auth } from "@/auth"
-import { stripe, createOrGetStripeCustomer } from "@/lib/stripe/client"
+import { getStripe, createOrGetStripeCustomer } from "@/lib/stripe/client"
 import { createFedaPayTransaction } from "@/lib/fedapay/client"
 import { revalidatePath } from "next/cache"
 
@@ -37,7 +37,7 @@ export async function initiateStripePayment(invoiceId: string) {
   )
 
   // Create PaymentIntent
-  const paymentIntent = await stripe.paymentIntents.create({
+  const paymentIntent = await getStripe().paymentIntents.create({
     amount: invoice.amountCents,
     currency: invoice.currency.toLowerCase(),
     customer: stripeCustomerId,
