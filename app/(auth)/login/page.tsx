@@ -25,14 +25,14 @@ export default function LoginPage() {
         email,
         password,
         redirect: false,
-        callbackUrl: "/dashboard",
       })
 
       if (result?.error) {
         setError("Invalid email or password")
         setLoading(false)
-      } else {
-        window.location.href = result?.url || "/dashboard"
+      } else if (result?.ok) {
+        // Full page navigation to ensure cookie is sent on next request
+        window.location.href = "/dashboard"
       }
     } catch {
       setError("Something went wrong. Please try again.")

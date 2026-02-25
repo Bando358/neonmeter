@@ -2,9 +2,20 @@ import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
 import { getToken } from "next-auth/jwt"
 
+// Must match the cookie name in auth.ts
+const useSecureCookies = process.env.VERCEL === "1"
+const cookieName = useSecureCookies
+  ? "__Secure-authjs.session-token"
+  : "authjs.session-token"
+
 export async function middleware(req: NextRequest) {
   const { nextUrl } = req
-  const token = await getToken({ req, secret: process.env.AUTH_SECRET })
+
+  const token = await getToken({
+    req,
+    secret: process.env.AUTH_SECRET!,
+    cookieName,
+  })
   const isLoggedIn = !!token
 
   const isAuthRoute = nextUrl.pathname.startsWith("/login") || nextUrl.pathname.startsWith("/register")
