@@ -25,17 +25,17 @@ export default function LoginPage() {
         email,
         password,
         redirect: false,
+        callbackUrl: "/dashboard",
       })
 
       if (result?.error) {
         setError("Invalid email or password")
+        setLoading(false)
       } else {
-        router.push("/dashboard")
-        router.refresh()
+        window.location.href = result?.url || "/dashboard"
       }
     } catch {
       setError("Something went wrong. Please try again.")
-    } finally {
       setLoading(false)
     }
   }
